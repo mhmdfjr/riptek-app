@@ -8,7 +8,9 @@ Aplikasi rekap presensi siswa yang dibangun menggunakan Flutter dan Firebase. Ap
 
 ## 📸 Cuplikan Layar
 
-<img src="assets/ss1.jpeg" alt="App Screenshot" width="300"/> <img src="assets/ss2jpeg" alt="App Screenshot" width="300"/>
+<img src="assets/images/ss1.jpeg" alt="App Screenshot" width="300"/>
+<img src="assets/images/ss2jpeg" alt="App Screenshot" width="300"/>
+
 _(Catatan: Pastikan Anda menempatkan file cuplikan layar bernama `screenshot.png` di dalam folder `assets`)_
 
 ---
