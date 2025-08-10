@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-// DIGANTI: Menggunakan import untuk open_filex
 import 'package:open_filex/open_filex.dart';
 import 'package:data_table_2/data_table_2.dart';
 
@@ -101,8 +100,7 @@ class _RekapPageState extends State<RekapPage> {
                 const SizedBox(height: 16),
                 _buildAttendanceChart(chartData),
                 const SizedBox(height: 32),
-                _buildSectionHeader(Icons.list_alt, 'List Activities'),
-                const SizedBox(height: 16),
+                // Judul dan filter tabel sekarang digabung di dalam _buildActivitiesTable
                 _buildActivitiesTable(filteredData),
                 const SizedBox(height: 32),
                 _buildExportButtons(allData),
@@ -179,47 +177,54 @@ class _RekapPageState extends State<RekapPage> {
     );
   }
 
+  // DIUBAH: Chart sekarang bisa di-scroll
   Widget _buildAttendanceChart(List<double> chartData) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SizedBox(
-          height: 200,
-          child: LineChart(
-            LineChartData(
-              gridData: const FlGridData(show: false),
-              titlesData: FlTitlesData(
-                leftTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: true, reservedSize: 40)),
-                bottomTitles: AxisTitles(sideTitles: _bottomTitles),
-                topTitles:
-                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles:
-                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              ),
-              borderData: FlBorderData(show: false),
-              lineBarsData: [
-                LineChartBarData(
-                  spots: chartData
-                      .asMap()
-                      .entries
-                      .map((e) => FlSpot(e.key.toDouble(), e.value))
-                      .toList(),
-                  isCurved: true,
-                  color: Colors.purple,
-                  barWidth: 4,
-                  isStrokeCapRound: true,
-                  dotData: const FlDotData(show: false),
-                  belowBarData: BarAreaData(
-                    show: true,
-                    color: Colors.purple.withOpacity(0.3),
-                  ),
+      clipBehavior: Clip.antiAlias,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 20, 20, 12),
+          child: SizedBox(
+            height: 200,
+            width: 600, // Lebar chart dibuat lebih besar dari layar
+            child: LineChart(
+              LineChartData(
+                gridData: const FlGridData(show: false),
+                titlesData: FlTitlesData(
+                  leftTitles: const AxisTitles(
+                      sideTitles:
+                          SideTitles(showTitles: true, reservedSize: 40)),
+                  bottomTitles: AxisTitles(sideTitles: _bottomTitles),
+                  topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
                 ),
-              ],
-              minY: 0,
-              maxY: 100,
+                borderData: FlBorderData(show: false),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: chartData
+                        .asMap()
+                        .entries
+                        .map((e) => FlSpot(e.key.toDouble(), e.value))
+                        .toList(),
+                    isCurved: true,
+                    color: Colors.purple,
+                    barWidth: 4,
+                    isStrokeCapRound: true,
+                    dotData: const FlDotData(show: false),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: Colors.purple.withOpacity(0.3),
+                    ),
+                  ),
+                ],
+                minY: 0,
+                maxY: 100,
+              ),
             ),
           ),
         ),
@@ -227,42 +232,59 @@ class _RekapPageState extends State<RekapPage> {
     );
   }
 
+  // DIUBAH: Widget ini sekarang mencakup header dan tabel
   Widget _buildActivitiesTable(List<Presensi> data) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        _buildFilterDropdown(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildSectionHeader(Icons.list_alt, 'List Activities'),
+            _buildFilterDropdown(), // Filter dipindah ke sini
+          ],
+        ),
         const SizedBox(height: 10),
-        Card(
-          elevation: 2,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        Container(
+          height: 560,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.grey.withOpacity(0.15),
+            //     spreadRadius: 1,
+            //     blurRadius: 5,
+            //     offset: const Offset(0, 2),
+            //   ),
+            // ],
+          ),
           clipBehavior: Clip.antiAlias,
-          child: SizedBox(
-            height: 560, // Tinggi tabel agar paginasi terlihat
-            child: PaginatedDataTable2(
-              columns: const [
-                DataColumn2(label: Text('No'), fixedWidth: 50),
-                DataColumn(label: Text('Nama')),
-                DataColumn(label: Text('Divisi')),
-                DataColumn(label: Text('Waktu')),
-              ],
-              source: _ActivityDataSource(data, context),
-              rowsPerPage: 10,
-              columnSpacing: 12,
-              horizontalMargin: 12,
-              minWidth: 600,
-              showCheckboxColumn: false,
-            ),
+          child: PaginatedDataTable2(
+            columns: const [
+              DataColumn2(label: Text('No'), fixedWidth: 50),
+              DataColumn(label: Text('Nama')),
+              DataColumn(label: Text('Divisi')),
+              DataColumn(label: Text('Waktu')),
+            ],
+            source: _ActivityDataSource(data, context),
+            rowsPerPage: 10,
+            columnSpacing: 12,
+            horizontalMargin: 12,
+            minWidth: 600,
+            showCheckboxColumn: false,
+            dataRowHeight: 52,
+            headingRowHeight: 56,
           ),
         ),
       ],
     );
   }
 
+  // DIUBAH: Filter dibuat lebih kecil
   Widget _buildFilterDropdown() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      height: 38,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.grey[200],
         borderRadius: BorderRadius.circular(8),
@@ -271,6 +293,7 @@ class _RekapPageState extends State<RekapPage> {
         child: DropdownButton<TableFilter>(
           value: _selectedFilter,
           icon: const Icon(Icons.filter_list, size: 20),
+          style: const TextStyle(fontSize: 14, color: Colors.black87),
           items: const [
             DropdownMenuItem(
                 value: TableFilter.thisWeek, child: Text('This Week')),
@@ -341,50 +364,54 @@ class _RekapPageState extends State<RekapPage> {
   SideTitles get _bottomTitles => SideTitles(
         showTitles: true,
         getTitlesWidget: (value, meta) {
-          const style = TextStyle(fontSize: 10);
+          const style = TextStyle(
+              fontSize: 10, color: Colors.black54, fontWeight: FontWeight.bold);
           String text;
           switch (value.toInt()) {
             case 0:
-              text = 'Jan';
+              text = 'JAN';
               break;
             case 1:
-              text = 'Feb';
+              text = 'FEB';
               break;
             case 2:
-              text = 'Mar';
+              text = 'MAR';
               break;
             case 3:
-              text = 'Apr';
+              text = 'APR';
               break;
             case 4:
-              text = 'Mei';
+              text = 'MEI';
               break;
             case 5:
-              text = 'Jun';
+              text = 'JUN';
               break;
             case 6:
-              text = 'Jul';
+              text = 'JUL';
               break;
             case 7:
-              text = 'Agu';
+              text = 'AGU';
               break;
             case 8:
-              text = 'Sep';
+              text = 'SEP';
               break;
             case 9:
-              text = 'Okt';
+              text = 'OKT';
               break;
             case 10:
-              text = 'Nov';
+              text = 'NOV';
               break;
             case 11:
-              text = 'Des';
+              text = 'DES';
               break;
             default:
               text = '';
               break;
           }
-          return Text(text, style: style);
+          return SideTitleWidget(
+              axisSide: meta.axisSide,
+              space: 4,
+              child: Text(text, style: style));
         },
       );
 
@@ -494,7 +521,6 @@ class _RekapPageState extends State<RekapPage> {
         SnackBar(content: Text('Berhasil disimpan di $path')),
       );
 
-      // DIGANTI: Menggunakan OpenFilex.open
       await OpenFilex.open(path);
     } catch (e) {
       if (!mounted) return;
