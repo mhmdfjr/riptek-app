@@ -1,6 +1,6 @@
 # Riptek App
 
-![App Logo](assets/images/logo.png)
+<img src="assets/images/logo.png" alt="App Logo" width="100"/>
 
 Aplikasi rekap presensi siswa yang dibangun menggunakan Flutter dan Firebase. Aplikasi ini menyediakan dasbor komprehensif untuk memonitor, memvisualisasikan, dan mengekspor data kehadiran yang tersimpan di Cloud Firestore.
 
@@ -8,8 +8,7 @@ Aplikasi rekap presensi siswa yang dibangun menggunakan Flutter dan Firebase. Ap
 
 ## 📸 Cuplikan Layar
 
-<img src="assets/images/ss1.jpeg" alt="App Screenshot" width="300"/>
-<img src="assets/images/ss2jpeg" alt="App Screenshot" width="300"/>
+<img src="assets/images/ss1.jpeg" alt="App Screenshot" width="300"/><img src="assets/images/ss2.jpeg" alt="App Screenshot" width="300"/>
 
 _(Catatan: Pastikan Anda menempatkan file cuplikan layar bernama `screenshot.png` di dalam folder `assets`)_
 
